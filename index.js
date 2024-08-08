@@ -5,22 +5,68 @@ const path = require('path');
 const readline = require('readline');
 const { performOCR } = require('./ocr');
 
-// Exécuter l'OCR sur une image 
+// Fichier issue du traitement OCR
 const logFileName = `sim.txt`;
 
 // const logFilePath = path.join(__dirname, logFileName);
 const logFilePath = path.join(path.dirname(process.execPath), logFileName);
-const imagePath = 'scan.jpg';
+// let imagePath = 'test';
 const filePath = "sim.txt";
 
+//Lecture Carte SIM ORANGE
+console.log(`
 
+    ██╗  ██╗███████╗██████╗ ██╗     ██████╗  ██████╗██████╗ 
+    ██║  ██║██╔════╝██╔══██╗██║    ██╔═══██╗██╔════╝██╔══██╗
+    ███████║█████╗  ██████╔╝██║    ██║   ██║██║     ██████╔╝
+    ██╔══██║██╔══╝  ██╔══██╗██║    ██║   ██║██║     ██╔══██╗
+    ██║  ██║███████╗██║  ██║██║    ╚██████╔╝╚██████╗██║  ██║
+    ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═════╝  ╚═════╝╚═╝  ╚═╝                                                                                                                                         
+`);
+console.log(`
+    -------------------------------------------------------
+                --------------------------
+    Développée par Herimalala VALISOA. extractsimnumber v1.3
+                   Pour Solutions30
+                --------------------------
+    -------------------------------------------------------
 
+    `);
+console.log('Programme pour relever les numeros de carte SIM');
+console.log('Lecture du dossier en cours....');
+
+// Fonction pour relever tous les fichiers .jpg dans le dossier
+async function releverFichiersJPG(dossier) {
+    // Lire le contenu du dossier
+    fs.readdir(dossier, (err, fichiers) => {
+        if (err) {
+            console.error('Erreur lors de la lecture du dossier:', err);
+            return;
+        }
+
+        // Filtrer les fichiers pour ne garder que les .jpg ou .jpeg
+        const jpgFiles = fichiers.filter(fichier => {
+            return path.extname(fichier).toLowerCase() === '.jpg' || path.extname(fichier).toLowerCase() === '.jpeg';
+        });
+        if (jpgFiles.length > 0) {
+            // Afficher les fichiers .jpg trouvés
+            console.log('Fichiers .jpg trouvés :', jpgFiles);
+        }else{
+            console.log('Aucun fichier jpg trouvé! Veuillez placer les fichiers images dans le dossier de l\'application.');
+        }
+
+        jpgFiles.forEach(fichier => {
+            const imagePath = path.join(dossier, fichier);
+            main(imagePath);
+        });
+    });
+
+}
+releverFichiersJPG('./');
 
 // Fonction pour lire le fichier et rechercher les nombres
-async function rechercherNombres(filePath) {
+async function rechercherNombres(filePath, imagePath) {
 
-    //Lecture Carte SIM ORANGE
-    console.log('Programme pour lire extraire les numeros de carte SIM');
     // Lire le fichier
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
@@ -46,13 +92,22 @@ async function rechercherNombres(filePath) {
                 }
             });
 
-            // console.log('Nombres trouvés:', resultats);
             console.log('Nombre traité :', resultats.length);
-            console.log('Nombre traité :', validNumbers.length);
+            console.log('Nombre valide :', validNumbers.length);
             console.error('Nombre erreur: ', invalidNumbers.length);
             ecrireDansCsv(resultats);
+
+            const fichier_a_supprimer = path.join(path.dirname(process.execPath), 'sim.txt');
+            fs.unlink(fichier_a_supprimer, (err) => {
+                if (err) {
+                    console.error('Erreur lors de la suppression du fichier:', err);
+                    return;
+                }
+                console.log('Fichier supprimé avec succès!');
+            });
+
         } else {
-            console.log('Aucun nombre commençant par 007 trouvé.');
+            console.log('Aucun numero de SIM valide trouvé.');
         }
     });
 }
@@ -89,33 +144,28 @@ function ecrireDansCsv(resultats) {
     fs.writeFile(csvFilePath, header + contenu, (err) => {
         if (err) {
             console.error('Erreur lors de l\'écriture du fichier CSV:', err);
-            endTerminal();
         } else {
-            console.log('Les résultats ont été écrits dans', uniqueFileName);
-            endTerminal();
+            console.log('Les numeros sont enregistré dans le fichier :', uniqueFileName);
         }
     });
-
-
 }
 
-function endTerminal() {
+async function endTerminal() {
     // Mettre en pause le terminal
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
     });
-
     rl.question('Appuyez sur Entrée pour quitter...', () => {
         rl.close();
     });
 }
 
-async function main() {
-// Traiter l'image
-    await performOCR(imagePath, logFilePath); // Attend que firstFunction soit terminée
+async function main(imagePath) {
+    // Traiter l'image
+    await performOCR(imagePath, logFilePath); // Attend que performOCR est terminée
     // extraction dans un fichier csv
-    rechercherNombres(filePath);// Ensuite, exécute secondFunction
-  }
+    rechercherNombres(filePath, imagePath);
+}
 
-main();
+

@@ -4,6 +4,7 @@ const path = require('path');
 
 // Fonction pour initialiser le fichier de log
 function initLogFile(logFilePath) {
+
     fs.writeFileSync(logFilePath, 'Tesseract OCR Logs\n', (err) => {
         if (err) {
             console.error('Erreur lors de l\'initialisation du fichier de log:', err);
@@ -13,6 +14,7 @@ function initLogFile(logFilePath) {
 
 // Fonction pour ajouter une entrée de log au fichier
 function logToFile(logFilePath, message) {
+    console.log('traitement du fichier Veuillez patientez...');
     fs.appendFileSync(logFilePath, message + '\n', (err) => {
         if (err) {
             console.error('Erreur lors de l\'écriture du log:', err);
@@ -23,12 +25,11 @@ function logToFile(logFilePath, message) {
 
 // Fonction OCR avec Tesseract.js
 async function performOCR(imagePath, logFilePath) {
-
     initLogFile(logFilePath);
 
     return Tesseract.recognize(
         imagePath,
-        'eng', 
+        'eng',
         {
             logger: info => {
                 // console.log(info); // Afficher le log dans la console
@@ -41,7 +42,7 @@ async function performOCR(imagePath, logFilePath) {
         return text;
     }).catch(err => {
         console.error('Erreur OCR:', err);
-        console.log(info)
+        // console.log(info)
         throw err;
     });
 }
