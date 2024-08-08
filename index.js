@@ -4,14 +4,16 @@ const os = require('os');
 const path = require('path');
 const readline = require('readline');
 const { performOCR } = require('./ocr');
+const configPath = path.join(process.cwd(), 'config.json');
+const config = require(configPath);
 
 // Fichier issue du traitement OCR
-const logFileName = `sim.txt`;
+const logFileName = config.filePath;
 
 // const logFilePath = path.join(__dirname, logFileName);
 const logFilePath = path.join(path.dirname(process.execPath), logFileName);
 // let imagePath = 'test';
-const filePath = "sim.txt";
+const filePath = config.filePath;
 
 //Lecture Carte SIM ORANGE
 console.log(`
@@ -97,13 +99,12 @@ async function rechercherNombres(filePath, imagePath) {
             console.error('Nombre erreur: ', invalidNumbers.length);
             ecrireDansCsv(resultats);
 
-            const fichier_a_supprimer = path.join(path.dirname(process.execPath), 'sim.txt');
+            const fichier_a_supprimer = path.join(path.dirname(process.execPath), config.filePath);
             fs.unlink(fichier_a_supprimer, (err) => {
                 if (err) {
                     console.error('Erreur lors de la suppression du fichier:', err);
                     return;
                 }
-                console.log('Fichier supprimé avec succès!');
             });
 
         } else {
@@ -135,7 +136,7 @@ function ecrireDansCsv(resultats) {
 
     // En-tête du fichier CSV
     const header = 'Nombre\n';
-    let serieChiffres = "'8944538531";
+    let serieChiffres = config.prefix;
     // Contenu du fichier CSV
     const contenu = resultats.map(nombre => `${serieChiffres}${nombre}`).join('\n');
 
