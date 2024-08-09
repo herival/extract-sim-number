@@ -17,8 +17,8 @@ Cette application à pour but de relever les numéros de série inscrit sur les 
 
 L'application est développé dans un environnement Nodejs et implémente le moteur OCR Tesseract.
 
-* [![Node][Node.js]][Node-url]
-* [![Tesseract OCR]][React-url]
+* Node.js
+* Tesseract Engine OCR
 
 
 <!-- GETTING STARTED -->
