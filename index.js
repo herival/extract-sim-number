@@ -29,7 +29,7 @@ console.log(`
     -------------------------------------------------------
                 --------------------------
     Développée par Herimalala VALISOA. extractsimnumber v1.3
-                   Pour Solutions30
+                   Pour Solutions30 IT. 
                 --------------------------
     -------------------------------------------------------
 
@@ -80,7 +80,7 @@ async function rechercherNombres(filePath, imagePath) {
         const regex = /\b007\d*\b/g;
         const resultats = data.match(regex);
 
-        // Filtrer les nombres par longueur spécifique (par exemple, seulement ceux avec 6 chiffres au total)
+        // Filtrer les nombres par longueur spécifique de digits
         const validLength = 9;
         const validNumbers = [];
         const invalidNumbers = [];
@@ -98,7 +98,8 @@ async function rechercherNombres(filePath, imagePath) {
             console.log('Nombre valide :', validNumbers.length);
             console.error('Nombre erreur: ', invalidNumbers.length);
             ecrireDansCsv(resultats);
-
+            
+            // supprimer le fichier temporaire pour éviter un retraitement
             const fichier_a_supprimer = path.join(path.dirname(process.execPath), config.filePath);
             fs.unlink(fichier_a_supprimer, (err) => {
                 if (err) {
